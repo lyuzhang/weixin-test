@@ -23,7 +23,7 @@ app.use((request,response,next)=>{
   const {signature,echostr,timestamp,nonce} = request.query;
   const {token} = config;
   const arr = [timestamp,nonce,token].sort();
-//console.log(arr);
+  console.log(arr);
   const str = sha1(arr.join(''));
   console.log(str);
   if(signature === str){
