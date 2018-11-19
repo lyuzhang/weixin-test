@@ -4,6 +4,8 @@
 const express = require('express');
 const sha1 = require('sha1');
 const {getUserDataAsync,parseXMLDataAsync,formatMessage} = require('./utils/tools');
+const reply = require('./reply/reply');
+const template = require('./reply/template');
 const app = express();
 
 const config = {
@@ -63,32 +65,10 @@ app.use(async(request,response,next)=>{
       * */
      const message = formatMessage(jsData);
      console.log(message);
-     //初始化消息配置对象
-    let options = {
-      toUserName: message.FromUserName,
-      fromUserName: message.ToUserName,
-      createTime: Date.now(),
-      msgType: 'text'
 
-    }
 
-    //初始化文本
-    let content = '你在说什么，我听不懂~';
-    if(message.MsgType === 'text'){
-      if(message.Content === '1'){
-        content = '哈哈哈test成功！！';
-      }else if(message.Content === '2'){
-        content = '鸡犬升天';
-      }else if (message.Content.includes('宝宝')){
-        content ='baby宝宝真可爱！！';
-      }
-    }else if(message.MsgType === 'voice'){
-      content = `这是一段语音！${message.Recognition}`;
-    }else if(message.MsgType === 'image'){
-      content = '这是一张图片';
-    }
-    options.content = content;
 
+/*
 
     let replyMessage = `<xml>
       <ToUserName><![CDATA[${message.FromUserName}]]></ToUserName>
@@ -97,9 +77,9 @@ app.use(async(request,response,next)=>{
       <MsgType><![CDATA[${options.msgType}]]></MsgType>`;
 
 
-   /*   <MsgType><![CDATA[text]]></MsgType>
+   /!*   <MsgType><![CDATA[text]]></MsgType>
       <Content><![CDATA[${content}]]></Content>
-      */
+      *!/
 
     if(message.MsgType === 'text'){
       replyMessage += `<Content><![CDATA[${options.content}]]></Content>`;
@@ -111,6 +91,11 @@ app.use(async(request,response,next)=>{
 
     replyMessage += `</xml>`;
 
+*/
+    const options = reply(message);
+
+    const replyMessage = template(options);
+    //console.log(replyMessage);
 
     response.send(replyMessage);
 
@@ -118,6 +103,7 @@ app.use(async(request,response,next)=>{
   }else{
     response.end('error');
   }
+
 
 
 
